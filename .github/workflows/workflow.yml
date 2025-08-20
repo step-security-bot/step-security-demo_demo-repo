@@ -2,6 +2,9 @@ name: Main workflow
 on:
   workflow_dispatch:
   
+permissions:
+  contents: read
+
 jobs:
   run:
     name: Run
@@ -15,12 +18,17 @@ jobs:
       extensions: xml, opcache, xdebug, pcov
       key: cache-v3
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Setup cache environment
         id: cache-env
-        uses: shivammathur/cache-extensions@develop
+        uses: shivammathur/cache-extensions@ed47a55c463bf49c0de08e5290a3d55208e2c287 # develop
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
